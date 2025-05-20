@@ -1,162 +1,134 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Registro de Equipamentos</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"/>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
   <style>
-    body.modo-claro { background-color: #f0f0f0; color: #000; }
-    body.modo-escuro { background-color: #121212; color: #fff; }
-    table { width: 100%; margin-top: 20px; }
-    .retornado { background-color: #d3ffd3; }
-    .nao-retornado { background-color: #ffdede; }
-    .modo-toggle-container { display: flex; align-items: center; gap: 10px; }
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    h1 { text-align: center; }
+    form, .acoes {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 800px;
+      margin: 20px auto;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    input, button, select {
+      width: 100%;
+      margin-bottom: 15px;
+      padding: 10px;
+      font-size: 16px;
+    }
+    table {
+      width: 100%;
+      margin-top: 30px;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+    th { background: #007bff; color: white; }
+    tr.nao-retornado { background-color: #fff3cd; }
+    tr.retornado { background-color: #d4edda; }
+    .botao-retorno, .botao-editar, .botao-salvar {
+      cursor: pointer;
+      color: #007bff;
+      text-decoration: underline;
+      background: none;
+      border: none;
+      font-size: 14px;
+      padding: 0;
+    }
+    .acoes button {
+      margin-bottom: 10px;
+      width: auto;
+      display: inline-block;
+      margin-right: 10px;
+    }
   </style>
 </head>
-<body class="modo-claro">
-  <section class="section">
-    <div class="container">
-      <div class="modo-toggle-container">
-        <label class="checkbox">
-          <input type="checkbox" id="modoToggle" onchange="alternarModo()">
-          <span id="modoIcon">🌞</span> Modo Escuro
-        </label>
-      </div>
-      <h1 class="title">Registro de Equipamentos</h1>
-      <form id="registroForm" class="box">
-        <div class="field">
-          <label class="label">Equipamento</label>
-          <div class="control">
-            <input class="input" type="text" id="equipamento" required>
-          </div>
-        </div>
-        <div class="field">
-          <label class="label">Quem Pegou</label>
-          <div class="control">
-            <input class="input" type="text" id="quemPegou" required>
-          </div>
-        </div>
-        <div class="field">
-          <label class="label">Setor</label>
-          <div class="control">
-            <input class="input" type="text" id="setor" required>
-          </div>
-        </div>
-        <div class="field">
-          <label class="label">Liberado por</label>
-          <div class="control">
-            <input class="input" type="text" id="liberadoPor" required>
-          </div>
-        </div>
-        <div class="control">
-          <button class="button is-primary" type="submit">Registrar Saída</button>
-        </div>
-      </form>
+<body>
+  <h1>Registro de Entrega de Equipamentos</h1>
 
-      <div class="buttons mt-4">
-        <button class="button is-info" onclick="exportarExcel()">Exportar para Excel</button>
-        <button class="button is-warning" onclick="exportarPDF()">Exportar para PDF</button>
-        <button class="button is-danger" onclick="limparRegistros()">Limpar Registros</button>
-      </div>
+  <form id="registroForm">
+    <input type="hidden" id="tipo" value="Saída" />
+    <label for="equipamento">Nome do Equipamento:</label>
+    <input type="text" id="equipamento" required />
+    <label for="quemPegou">Quem pegou:</label>
+    <input type="text" id="quemPegou" required />
+    <label for="setor">Setor:</label>
+    <input type="text" id="setor" required />
+    <label for="liberadoPor">Liberado por:</label>
+    <input type="text" id="liberadoPor" required />
+    <button type="submit">Registrar</button>
+  </form>
 
-      <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth" id="tabelaRegistros">
-        <thead>
-          <tr>
-            <th>Tipo</th>
-            <th>Equipamento</th>
-            <th>Quem Pegou</th>
-            <th>Setor</th>
-            <th>Data</th>
-            <th>Hora</th>
-            <th>Liberado por</th>
-            <th>Status</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </section>
+  <div class="acoes">
+    <button onclick="exportarExcel()">📊 Exportar para Excel</button>
+    <button onclick="exportarPDF()">📄 Salvar em PDF</button>
+    <button onclick="limparRegistros()">🗑️ Limpar Lista</button>
+  </div>
+
+  <table id="tabelaRegistros">
+    <thead>
+      <tr>
+        <th>Tipo</th>
+        <th>Equipamento</th>
+        <th>Quem Pegou</th>
+        <th>Setor</th>
+        <th>Data</th>
+        <th>Hora</th>
+        <th>Liberado por</th>
+        <th>Status</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import {
-      getDatabase,
-      ref,
-      onValue,
-      push,
-      set,
-      update,
-      remove
-    } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-app.js";
+    import { getDatabase, ref, push, onValue, set, remove, update } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
 
-    // 🔐 Coloque aqui suas credenciais do Firebase:
     const firebaseConfig = {
-    apiKey: "AIzaSyDV3-SpJHATwtvZJEIY2GiWOh1e50ZysnY",
-    authDomain: "equipamentosbarra-b5230.firebaseapp.com",
-    projectId: "equipamentosbarra-b5230",
-    storageBucket: "equipamentosbarra-b5230.firebasestorage.app",
-    messagingSenderId: "547115036741",
-    appId: "1:547115036741:web:95f2da5b79e5341fcdb32c",
-    measurementId: "G-ML5X3MPEY3"
+      apiKey: "AIzaSyDV3-SpJHATwtvZJEIY2GiWOh1e50ZysnY",
+      authDomain: "equipamentosbarra-b5230.firebaseapp.com",
+      databaseURL: "https://equipamentosbarra-b5230-default-rtdb.firebaseio.com",
+      projectId: "equipamentosbarra-b5230",
+      storageBucket: "equipamentosbarra-b5230.appspot.com",
+      messagingSenderId: "547115036741",
+      appId: "1:547115036741:web:95f2da5b79e5341fcdb32c",
+      measurementId: "G-ML5X3MPEY3"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-    const registrosRef = ref(db, "registros");
+    const registrosRef = ref(db, 'registros');
 
     const form = document.getElementById("registroForm");
     const tabela = document.querySelector("#tabelaRegistros tbody");
 
-    function carregarModo() {
-      const modo = localStorage.getItem("modo") || "modo-claro";
-      document.body.className = modo;
-      const toggle = document.getElementById("modoToggle");
-      const icon = document.getElementById("modoIcon");
-      toggle.checked = modo === "modo-escuro";
-      icon.textContent = toggle.checked ? "🌙" : "🌞";
-    }
-
-    window.alternarModo = function () {
-      const toggle = document.getElementById("modoToggle");
-      const icon = document.getElementById("modoIcon");
-      const modo = toggle.checked ? "modo-escuro" : "modo-claro";
-      document.body.className = modo;
-      localStorage.setItem("modo", modo);
-      icon.textContent = toggle.checked ? "🌙" : "🌞";
-    };
-
-    window.onload = function () {
-      carregarModo();
-
-      onValue(registrosRef, (snapshot) => {
-        tabela.innerHTML = "";
-        const data = snapshot.val();
-        if (data) {
-          Object.entries(data).forEach(([id, registro]) => {
-            adicionarLinhaNaTabela(id, registro);
-          });
-        }
-      });
-    };
-
     form.addEventListener("submit", function (e) {
       e.preventDefault();
+
       const tipo = "Saída";
       const equipamento = document.getElementById("equipamento").value;
       const quemPegou = document.getElementById("quemPegou").value;
       const setor = document.getElementById("setor").value;
       const liberadoPor = document.getElementById("liberadoPor").value;
-
       const agora = new Date();
       const data = agora.toLocaleDateString();
       const hora = agora.toLocaleTimeString();
 
-      const registro = {
+      const novoRegistro = {
         tipo,
         equipamento,
         quemPegou,
@@ -165,17 +137,27 @@
         hora,
         liberadoPor,
         retornado: false,
-        dataRetorno: null,
+        dataRetorno: null
       };
 
-      push(registrosRef, registro);
+      push(registrosRef, novoRegistro);
       form.reset();
     });
 
-    function adicionarLinhaNaTabela(id, registro) {
-      const novaLinha = tabela.insertRow();
-      novaLinha.className = registro.retornado ? "retornado" : "nao-retornado";
-      novaLinha.innerHTML = `
+    onValue(registrosRef, (snapshot) => {
+      tabela.innerHTML = "";
+      const data = snapshot.val();
+      if (data) {
+        Object.entries(data).forEach(([id, registro]) => {
+          adicionarLinhaNaTabela(registro, id);
+        });
+      }
+    });
+
+    function adicionarLinhaNaTabela(registro, id) {
+      const linha = tabela.insertRow();
+      linha.className = registro.retornado ? "retornado" : "nao-retornado";
+      linha.innerHTML = `
         <td>${registro.tipo}</td>
         <td>${registro.equipamento}</td>
         <td>${registro.quemPegou}</td>
@@ -184,47 +166,38 @@
         <td>${registro.hora}</td>
         <td>${registro.liberadoPor}</td>
         <td class="status-cell">
-          ${
-            registro.retornado
-              ? `Retornado em ${registro.dataRetorno}`
-              : `<button class="button is-small is-success" onclick="registrarRetorno('${id}', this)">Marcar Retorno</button>`
-          }
+          ${registro.retornado ? `Retornado em ${registro.dataRetorno}` :
+          `<button class="botao-retorno" onclick="registrarRetorno('${id}')">Marcar Retorno</button>`}
         </td>
         <td>
-          <button class="button is-small is-link" onclick="editarRegistro(this, '${id}')">Editar</button>
+          ${!registro.retornado ? `<button class="botao-editar" onclick="editarRegistro('${id}', this)">Editar</button>` : ""}
         </td>
       `;
     }
 
-    window.registrarRetorno = function (id, elemento) {
+    window.registrarRetorno = function(id) {
       const agora = new Date();
       const dataRetorno = agora.toLocaleDateString() + " " + agora.toLocaleTimeString();
-
-      update(ref(db, "registros/" + id), {
-        retornado: true,
-        dataRetorno: dataRetorno
-      });
+      update(ref(db, `registros/${id}`), { retornado: true, dataRetorno });
     };
 
-    window.editarRegistro = function (botao, id) {
+    window.editarRegistro = function(id, botao) {
       const linha = botao.closest("tr");
+      const inputs = linha.querySelectorAll("td input");
       if (botao.textContent === "Editar") {
-        for (let i of [1, 2, 3, 6]) {
-          const cell = linha.cells[i];
-          const valor = cell.textContent;
-          cell.innerHTML = `<input class="input is-small" type="text" value="${valor}">`;
-        }
+        const valores = Array.from(linha.querySelectorAll("td")).map(td => td.textContent);
+        linha.cells[1].innerHTML = `<input type="text" value="${valores[1]}" />`;
+        linha.cells[2].innerHTML = `<input type="text" value="${valores[2]}" />`;
+        linha.cells[3].innerHTML = `<input type="text" value="${valores[3]}" />`;
+        linha.cells[6].innerHTML = `<input type="text" value="${valores[6]}" />`;
         botao.textContent = "Salvar";
       } else {
-        const novoRegistro = {
-          equipamento: linha.cells[1].querySelector("input").value,
-          quemPegou: linha.cells[2].querySelector("input").value,
-          setor: linha.cells[3].querySelector("input").value,
-          liberadoPor: linha.cells[6].querySelector("input").value,
-        };
-        update(ref(db, "registros/" + id), novoRegistro);
-        Object.entries(novoRegistro).forEach(([_, valor], index) => {
-          linha.cells[[1, 2, 3, 6][index]].textContent = valor;
+        const equipamento = linha.cells[1].querySelector("input").value;
+        const quemPegou = linha.cells[2].querySelector("input").value;
+        const setor = linha.cells[3].querySelector("input").value;
+        const liberadoPor = linha.cells[6].querySelector("input").value;
+        update(ref(db, `registros/${id}`), {
+          equipamento, quemPegou, setor, liberadoPor
         });
         botao.textContent = "Editar";
       }
@@ -235,62 +208,55 @@
         remove(registrosRef);
       }
     };
+  </script>
 
-    window.exportarExcel = function () {
-      onValue(registrosRef, (snapshot) => {
-        const registros = snapshot.val() || {};
-        const dados = Object.values(registros).map((r) => ({
-          Tipo: r.tipo,
-          Equipamento: r.equipamento,
-          "Quem Pegou": r.quemPegou,
-          Setor: r.setor,
-          Data: r.data,
-          Hora: r.hora,
-          "Liberado por": r.liberadoPor,
-          Status: r.retornado ? `Retornado em ${r.dataRetorno}` : "Não retornado",
-        }));
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 
-        const ws = XLSX.utils.json_to_sheet(dados);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Registros");
-        XLSX.writeFile(wb, "registro_equipamentos.xlsx");
-      }, { onlyOnce: true });
-    };
+  <script>
+    async function exportarExcel() {
+      const snapshot = await fetch("https://equipamentosbarra-b5230-default-rtdb.firebaseio.com/registros.json");
+      const data = await snapshot.json();
+      if (!data) return;
+      const dados = Object.values(data).map(r => ({
+        Tipo: r.tipo,
+        Equipamento: r.equipamento,
+        "Quem Pegou": r.quemPegou,
+        Setor: r.setor,
+        Data: r.data,
+        Hora: r.hora,
+        "Liberado por": r.liberadoPor,
+        Status: r.retornado ? `Retornado em ${r.dataRetorno}` : "Não retornado",
+      }));
+      const ws = XLSX.utils.json_to_sheet(dados);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Registros");
+      XLSX.writeFile(wb, "registro_equipamentos.xlsx");
+    }
 
-    window.exportarPDF = function () {
-      onValue(registrosRef, (snapshot) => {
-        const registros = snapshot.val() || {};
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-
-        doc.setFontSize(16);
-        doc.text("Registro de Equipamentos", 14, 20);
-
-        const colunas = [
-          "Tipo", "Equipamento", "Quem Pegou", "Setor",
-          "Data", "Hora", "Liberado por", "Status"
-        ];
-        const linhas = Object.values(registros).map((r) => [
-          r.tipo,
-          r.equipamento,
-          r.quemPegou,
-          r.setor,
-          r.data,
-          r.hora,
-          r.liberadoPor,
-          r.retornado ? `Retornado em ${r.dataRetorno}` : "Não retornado"
-        ]);
-
-        doc.autoTable({
-          startY: 30,
-          head: [colunas],
-          body: linhas,
-          styles: { fontSize: 8 },
-        });
-
-        doc.save("registro_equipamentos.pdf");
-      }, { onlyOnce: true });
-    };
+    async function exportarPDF() {
+      const snapshot = await fetch("https://equipamentosbarra-b5230-default-rtdb.firebaseio.com/registros.json");
+      const data = await snapshot.json();
+      if (!data) return;
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.setFontSize(16);
+      doc.text("Registro de Equipamentos", 14, 20);
+      const colunas = ["Tipo", "Equipamento", "Quem Pegou", "Setor", "Data", "Hora", "Liberado por", "Status"];
+      const linhas = Object.values(data).map(r => [
+        r.tipo,
+        r.equipamento,
+        r.quemPegou,
+        r.setor,
+        r.data,
+        r.hora,
+        r.liberadoPor,
+        r.retornado ? `Retornado em ${r.dataRetorno}` : "Não retornado",
+      ]);
+      doc.autoTable({ startY: 30, head: [colunas], body: linhas, styles: { fontSize: 8 } });
+      doc.save("registro_equipamentos.pdf");
+    }
   </script>
 </body>
 </html>
