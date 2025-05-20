@@ -1,6 +1,59 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+
+  <script type="module">
+    // Importando os módulos necessários do Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-app.js";
+    import { getDatabase, ref, set, push, onValue } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
+  
+    // Configuração do Firebase (essa parte você já tem)
+    const firebaseConfig = {
+      apiKey: "AIzaSyAZ_RAb0Gt3uDWjhmgqfMqlp6yAWtUb1Os",
+      authDomain: "registroequipamentosbarra.firebaseapp.com",
+      databaseURL: "https://registroequipamentosbarra-default-rtdb.firebaseio.com",
+      projectId: "registroequipamentosbarra",
+      storageBucket: "registroequipamentosbarra.appspot.com",
+      messagingSenderId: "546611638528",
+      appId: "1:546611638528:web:00af5cf167ef59dc9a03e5",
+      measurementId: "G-M0EVHRRZ7K"
+    };
+  
+    // Inicializa o Firebase
+    const app = initializeApp(firebaseConfig);
+  
+    // Inicializa o Realtime Database
+    const db = getDatabase(app);
+  
+    // Exemplo de como adicionar um equipamento
+    function adicionarEquipamento(nome, numeroSerie) {
+      const equipamentosRef = ref(db, 'equipamentos');
+      const novoEquipamentoRef = push(equipamentosRef);
+      set(novoEquipamentoRef, {
+        nome: nome,
+        numeroSerie: numeroSerie,
+        dataCadastro: new Date().toISOString()
+      });
+    }
+  
+    // Exemplo de como escutar os dados em tempo real
+    const equipamentosRef = ref(db, 'equipamentos');
+    onValue(equipamentosRef, (snapshot) => {
+      const data = snapshot.val();
+      console.log("Equipamentos atuais:", data);
+    });
+  
+    // Chamada de exemplo
+    // adicionarEquipamento("Notebook", "123ABC456");
+  
+  </script>
+  
+  
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+  </script>
+  
   <meta charset="UTF-8" />
   <title>Registro de Equipamentos</title>
   <style>
