@@ -4,74 +4,97 @@
   <meta charset="UTF-8" />
   <title>Registro de Equipamentos</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      background: #121212;
-      color: white;
-    }
-    h1 {
-      text-align: center;
-      color: #00aaff;
-    }
-    form, .acoes {
-      background: #1e1e1e;
-      padding: 20px;
-      border-radius: 10px;
-      max-width: 800px;
-      margin: 20px auto;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-    }
-    input, button, select {
-      width: 100%;
-      margin-bottom: 15px;
-      padding: 10px;
-      font-size: 16px;
-      background: #2c2c2c;
-      color: white;
-      border: 1px solid #00aaff;
-    }
-    table {
-      width: 100%;
-      margin-top: 30px;
-      border-collapse: collapse;
-      background: #1e1e1e;
-      color: white;
-    }
-    th, td {
-      border: 1px solid #333;
-      padding: 8px;
-      text-align: center;
-    }
-    th {
-      background: #00aaff;
-      color: white;
-    }
-    tr.nao-retornado { background-color: #333300; }
-    tr.retornado { background-color: #003300; }
-    .botao-retorno, .botao-editar, .botao-salvar, .botao-excluir {
-      cursor: pointer;
-      color: #00aaff;
-      text-decoration: underline;
-      background: none;
-      border: none;
-      font-size: 14px;
-      padding: 0;
-    }
-    .acoes button {
-      margin-bottom: 10px;
-      width: auto;
-      display: inline-block;
-      margin-right: 10px;
-    }
-    .logo {
-      display: block;
-      margin: 0 auto;
-      max-width: 120px;
-    }
+body {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  background: #121212;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.container {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+h1 {
+  text-align: center;
+  color: #00aaff;
+}
+
+form, .acoes, table {
+  background: #1e1e1e;
+  padding: 40px;
+  border-radius: 10px;
+  width: 100%;
+  margin: 20px 0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+input, button, select {
+  width: 100%;
+  margin-bottom: 15px;
+  padding: 10px;
+  font-size: 16px;
+  background: #2c2c2c;
+  color: white;
+  border: 1px solid #00aaff;
+}
+
+table {
+  border-collapse: collapse;
+  color: white;
+}
+
+th, td {
+  border: 1px solid #333;
+  padding: 8px;
+  text-align: center;
+}
+
+th {
+  background: #00aaff;
+  color: white;
+}
+
+tr.nao-retornado { background-color: #333300; }
+tr.retornado { background-color: #003300; }
+
+.botao-retorno, .botao-editar, .botao-salvar, .botao-excluir {
+  cursor: pointer;
+  color: #00aaff;
+  text-decoration: underline;
+  background: none;
+  border: none;
+  font-size: 14px;
+  padding: 0;
+}
+
+.acoes button {
+  margin-bottom: 10px;
+  width: auto;
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.logo {
+  display: block;
+  margin: 0 auto 20px auto;
+  max-width: 200px;
+}
+
+.regis{
+  width: 90px;
+}
   </style>
 </head>
 <body>
+  <div class="container">
   <img class="logo" src="./img/barra dor.png" alt="Logo" />
   <h1>Registro de Entrega de Equipamentos</h1>
 
@@ -85,7 +108,7 @@
     <input type="text" id="setor" required />
     <label for="liberadoPor">Liberado por:</label>
     <input type="text" id="liberadoPor" required />
-    <button type="submit">Registrar</button>
+    <button type="submit" class="regis">Registrar</button>
   </form>
 
   <div class="acoes">
@@ -110,7 +133,7 @@
     </thead>
     <tbody></tbody>
   </table>
-
+</div>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-app.js";
     import { getDatabase, ref, push, onValue, set, remove, update } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
