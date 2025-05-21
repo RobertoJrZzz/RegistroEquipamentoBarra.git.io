@@ -112,10 +112,12 @@ tr.retornado { background-color: #003300; }
   </form>
 
   <div class="acoes">
-    <button onclick="exportarExcel()">📊 Exportar para Excel</button>
-    <button onclick="exportarPDF()">📄 Salvar em PDF</button>
-    <button onclick="limparRegistros()">🗑️ Limpar Lista</button>
-  </div>
+  <button onclick="exportarExcel()">📊 Exportar para Excel</button>
+  <button onclick="exportarPDF()">📄 Salvar em PDF</button>
+  <button onclick="limparRegistros()">🗑️ Limpar Lista</button>
+  <button onclick="logout()">🚪 Sair</button>
+</div>
+
 
   <table id="tabelaRegistros">
     <thead>
@@ -288,5 +290,22 @@ tr.retornado { background-color: #003300; }
       doc.save("registro_equipamentos.pdf");
     }
   </script>
+
+
+<script>
+  function logout() {
+    localStorage.removeItem("logado");
+    window.location.href = "login.html";
+  }
+</script>
+
+<script>
+  if (localStorage.getItem("logado") !== "true") {
+    window.location.href = "login.html";
+  }
+</script>
+
+
+
 </body>
 </html>
